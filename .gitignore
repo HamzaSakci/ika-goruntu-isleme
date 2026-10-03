@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.ipynb_checkpoints/
+
+# Veri setleri ve modeller (repoya eklenmez)
+datasets/
+*.zip
+*.pt
+*.onnx
+*.engine
+runs/
+
+# Büyük video dosyaları
+*.mp4
+*.avi
+*.mov
+
+# IDE / OS
+.vscode/
+.idea/
+Thumbs.db
+desktop.ini
