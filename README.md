@@ -1,4 +1,4 @@
-# İKA Görüntü İşleme — Piksel Fark Hesaplama
+﻿# İKA Görüntü İşleme — Piksel Fark Hesaplama
 
 İKA Otonomi & Görüntü İşleme 2027 Yetkinlik Programı — **Level 1** çalışması.
 
@@ -33,12 +33,41 @@ docs/       # referans analizi, teknik not
 Roboflow kaynaklı (duba / levha / hedef). Boyut nedeniyle repoya eklenmez — linkler ve istatistikler buraya eklenecek.
 
 ## İlerleme
-- [ ] Adım 1 — Görüntü merkezi
-- [ ] Adım 2 — Nesne tespiti (HSV + contour, YOLO)
-- [ ] Adım 3 — Piksel fark hesaplama
-- [ ] Adım 4 — Video / webcam + CSV log
+- [x] Adım 1 — Görüntü merkezi
+- [x] Adım 2 — Nesne tespiti (HSV + contour; YOLO ileride)
+- [x] Adım 3 — Piksel fark hesaplama
+- [x] Adım 4 — Video / webcam + CSV log (kamera testi bekliyor)
 - [ ] Adım 5 — Birim testler
 - [ ] Adım 6 — Dokümantasyon
 
 ## Referans
 - [Poyqraz/Line-Tracking-and-Anomaly-Detection](https://github.com/Poyqraz/Line-Tracking-and-Anomaly-Detection) — Teknofest 2024 AUV kablo takibi
+
+## Sonuçlar (HSV duba tespiti, 170 etiketli görsel)
+
+Veri: Roboflow `Denemeler_Montagne v6`, sadece `Duba` sınıfı (`tools/filter_duba.py`). Değerlendirme: `python tools/evaluate.py`.
+
+| Metrik | Değer |
+|---|---|
+| Etiketli görsel | 170 (train 115 / valid 38 / test 17) |
+| Merkez hatası, **ortanca** (köşegene oranla) | **%1,8** |
+| Merkez hatası, ortalama | %6,9 |
+| Hata < köşegenin %5'i | 107/170 (%62,9) |
+| Hata < köşegenin %10'u | 130/170 (%76,5) |
+| IoU ortanca / ortalama | 0,45 / 0,46 |
+
+![Hata dağılımı](outputs/eval_hist.png)
+
+### Başarısız örnekler ve kök neden
+`outputs/eval_worst.png` (yeşil = tespit, kırmızı = etiket):
+
+![En kötü 6](outputs/eval_worst.png)
+
+- Dedektör **her görselde bir şey buluyor** (miss = 0), ama bu iyi bir haber değil: "duba yok" durumunu ayırt edemiyor. Asıl sorun **yanlış pozitif**.
+- Yanlış tespitler: **kırmızı araba**, **turuncu bariyer/kamyon**, **sonbahar yaprakları**. Hepsi dubayla aynı HSV aralığında.
+- Yalnız renk yeterli bir ayırt edici değil. Dubanın **kırmızı-beyaz şerit deseni + konik şekil** kullanılmalı.
+- Birden fazla duba olan karelerde sadece en büyük blob seçiliyor.
+- IoU düşük: gölgedeki kenar maskeden düşüyor, kutu daralıyor.
+
+### Sonraki adım
+Renk + şekil/şerit doğrulaması ya da YOLO (Level 2) ile aynı metrik üzerinde karşılaştırma.
