@@ -37,7 +37,7 @@ Roboflow kaynaklı (duba / levha / hedef). Boyut nedeniyle repoya eklenmez — l
 - [x] Adım 2 — Nesne tespiti (HSV + contour; YOLO ileride)
 - [x] Adım 3 — Piksel fark hesaplama
 - [x] Adım 4 — Video / webcam + CSV log (kamera testi bekliyor)
-- [ ] Adım 5 — Birim testler
+- [x] Adım 5 — Birim testler (22 test: `python -m pytest tests`)
 - [ ] Adım 6 — Dokümantasyon
 
 ## Referans
@@ -71,3 +71,4 @@ Veri: Roboflow `Denemeler_Montagne v6`, sadece `Duba` sınıfı (`tools/filter_d
 
 ### Sonraki adım
 Renk + şekil/şerit doğrulaması ya da YOLO (Level 2) ile aynı metrik üzerinde karşılaştırma.
+

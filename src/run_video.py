@@ -4,6 +4,7 @@ import csv
 import time
 import os
 from detector import detect_duba
+from pixel_offset import compute_offset, decide_command
 
 def run_video_tracking(video_source=0, output_csv="outputs/tracking_log.csv"):
     """
@@ -51,20 +52,9 @@ def run_video_tracking(video_source=0, output_csv="outputs/tracking_log.csv"):
                 cv2.circle(frame, (cx, cy), 5, (0, 255, 0), -1)
                 cv2.line(frame, (cx0, cy0), (cx, cy), (0, 255, 255), 2)
                 
-                dx = cx - cx0
-                dy = cy - cy0
-                
-                # Normalize edilmiş sapmalar (Word dosyasında istenen e_y, e_x formatı)
-                ex = dx / (w / 2)
-                ey = dy / (h / 2)
-                
-                # Dead-band (Ölü bölge) Kontrolcüsü Kararı
-                if abs(ex) < 0.1: # %10'dan az sapma varsa hizalı
-                    command = "HIZALI"
-                elif ex > 0:
-                    command = "SAGA HIZALA"
-                else:
-                    command = "SOLA HIZALA"
+                r = compute_offset(cx, cy, w, h)
+                dx, dy, ex, ey = r["dx"], r["dy"], r["ex"], r["ey"]
+                command = decide_command(ex)
                     
                 cv2.putText(frame, f"Komut: {command} (ex: {ex:.2f})", (10, 30), 
                             cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
