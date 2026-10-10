@@ -38,5 +38,7 @@ if __name__ == "__main__":
     os.makedirs(output_dir, exist_ok=True) # Klasör yoksa oluştur
     
     output_path = os.path.join(output_dir, "01_merkez.png")
-    cv2.imwrite(output_path, test_img)
-    print(f"Test görüntüsü başarıyla kaydedildi: {output_path}")
+    ok, buf = cv2.imencode(".png", test_img)
+    if ok:
+        buf.tofile(output_path)
+        print(f"Test görüntüsü başarıyla kaydedildi: {output_path}")
