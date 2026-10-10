@@ -38,7 +38,7 @@ Roboflow kaynaklı (duba / levha / hedef). Boyut nedeniyle repoya eklenmez — l
 - [x] Adım 3 — Piksel fark hesaplama
 - [x] Adım 4 — Video / webcam + CSV log (kamera testi bekliyor)
 - [x] Adım 5 — Birim testler (22 test: `python -m pytest tests`)
-- [ ] Adım 6 — Dokümantasyon
+- [x] Adım 6 — Dokümantasyon ([teknik not](docs/teknik_not.md))
 
 ## Referans
 - [Poyqraz/Line-Tracking-and-Anomaly-Detection](https://github.com/Poyqraz/Line-Tracking-and-Anomaly-Detection) — Teknofest 2024 AUV kablo takibi
@@ -71,4 +71,5 @@ Veri: Roboflow `Denemeler_Montagne v6`, sadece `Duba` sınıfı (`tools/filter_d
 
 ### Sonraki adım
 Renk + şekil/şerit doğrulaması ya da YOLO (Level 2) ile aynı metrik üzerinde karşılaştırma.
+
 
