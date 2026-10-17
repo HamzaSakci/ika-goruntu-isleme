@@ -117,23 +117,33 @@ plt.tight_layout()
 plt.savefig(os.path.join(OUT, "eval_hist.png"), dpi=120)
 plt.close()
 
-# --- En kötü 6 (miss'ler dahil) ---
-worst = sorted(rows, key=lambda r: (r["found"], -(r["err_norm"] or 0)))
-worst = [r for r in worst if (not r["found"]) or r["err_norm"] > 0][:6]
+# --- En iyi 6 ve En kötü 6 ---
+def make_montage(subset, out_name):
+    tiles = []
+    for r in subset[:6]:
+        im = read_image_utf8(r["path"])
+        h_im, w_im = im.shape[:2]
+        cx0, cy0 = w_im // 2, h_im // 2
+        cv2.drawMarker(im, (cx0, cy0), (255, 0, 0), cv2.MARKER_CROSS, 20, 2)
+        for g in r["gts"]:
+            cv2.rectangle(im, (int(g[0]), int(g[1])), (int(g[2]), int(g[3])), (0, 0, 255), 3)
+        if r["det"]:
+            d = r["det"]
+            cv2.rectangle(im, (int(d[0]), int(d[1])), (int(d[2]), int(d[3])), (0, 255, 0), 3)
+            cx_d, cy_d = (int(d[0]) + int(d[2])) // 2, (int(d[1]) + int(d[3])) // 2
+            cv2.circle(im, (cx_d, cy_d), 6, (0, 255, 0), -1)
+            cv2.line(im, (cx0, cy0), (cx_d, cy_d), (0, 255, 255), 2)
+        label = "MISS" if not r["found"] else f"hata %{r['err_norm']*100:.1f} ({r['err_px']:.0f}px)"
+        cv2.putText(im, label, (10, 40), cv2.FONT_HERSHEY_SIMPLEX, 1.0, (0, 255, 255), 3)
+        tiles.append(cv2.resize(im, (360, 360)))
+    while len(tiles) < 6:
+        tiles.append(np.zeros((360, 360, 3), np.uint8))
+    montage = np.vstack([np.hstack(tiles[:3]), np.hstack(tiles[3:6])])
+    save_png(os.path.join(OUT, out_name), montage)
+
+
 worst = sorted(rows, key=lambda r: -(1.0 if not r["found"] else r["err_norm"]))[:6]
-tiles = []
-for r in worst:
-    im = read_image_utf8(r["path"])
-    for g in r["gts"]:
-        cv2.rectangle(im, (int(g[0]), int(g[1])), (int(g[2]), int(g[3])), (0, 0, 255), 3)
-    if r["det"]:
-        d = r["det"]
-        cv2.rectangle(im, (int(d[0]), int(d[1])), (int(d[2]), int(d[3])), (0, 255, 0), 3)
-    label = "MISS" if not r["found"] else f"hata %{r['err_norm']*100:.0f}"
-    cv2.putText(im, label, (10, 40), cv2.FONT_HERSHEY_SIMPLEX, 1.2, (0, 255, 255), 3)
-    tiles.append(cv2.resize(im, (320, 320)))
-while len(tiles) < 6:
-    tiles.append(np.zeros((320, 320, 3), np.uint8))
-montage = np.vstack([np.hstack(tiles[:3]), np.hstack(tiles[3:6])])
-save_png(os.path.join(OUT, "eval_worst.png"), montage)
-print("Çıktılar: outputs/eval_results.csv, eval_hist.png, eval_worst.png")
+best = sorted([r for r in rows if r["found"]], key=lambda r: r["err_norm"])[:6]
+make_montage(worst, "eval_worst.png")
+make_montage(best, "eval_best.png")
+print("Çıktılar: outputs/eval_results.csv, eval_hist.png, eval_best.png, eval_worst.png")
